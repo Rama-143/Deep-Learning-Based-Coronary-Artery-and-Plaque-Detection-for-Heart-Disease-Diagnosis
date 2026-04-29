@@ -1,0 +1,299 @@
+/* =========================
+   Global / Reset
+========================= */
+* { box-sizing: border-box; }
+
+:root{
+  --bg: #0b1220;
+  --panel: #0f1b33;
+  --card: #101f3d;
+  --text: #e7eefc;
+  --muted: #a9b7d3;
+  --border: rgba(255,255,255,0.10);
+  --shadow: 0 12px 30px rgba(0,0,0,0.35);
+
+  --primary: #5b8cff;
+  --primary2: #3fd1c9;
+  --danger: #ff5b5b;
+  --warn: #ffcc66;
+  --ok: #55d38a;
+
+  --radius: 16px;
+}
+
+html, body{
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--text);
+  background: radial-gradient(1000px 600px at 20% 10%, rgba(91,140,255,0.25), transparent 60%),
+              radial-gradient(900px 700px at 90% 20%, rgba(63,209,201,0.20), transparent 55%),
+              linear-gradient(180deg, var(--bg), #050914 75%);
+  min-height: 100vh;
+}
+
+a{
+  color: var(--primary);
+  text-decoration: none;
+}
+a:hover{ text-decoration: underline; }
+
+/* =========================
+   Layout Containers
+========================= */
+.container{
+  width: min(1100px, 92vw);
+  margin: 28px auto;
+}
+
+.top{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+h1, h2, h3{
+  margin: 0 0 10px 0;
+  letter-spacing: 0.2px;
+}
+
+p{ margin: 6px 0; color: var(--muted); }
+
+/* =========================
+   Cards / Panels
+========================= */
+.card{
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+.grid{
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
+
+.col-12{ grid-column: span 12; }
+.col-8{ grid-column: span 8; }
+.col-6{ grid-column: span 6; }
+.col-4{ grid-column: span 4; }
+.col-3{ grid-column: span 3; }
+
+@media (max-width: 900px){
+  .col-8, .col-6, .col-4, .col-3 { grid-column: span 12; }
+}
+
+/* =========================
+   Buttons / Badges
+========================= */
+.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.08s ease, background 0.12s ease, border 0.12s ease;
+}
+.btn:hover{
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.18);
+  transform: translateY(-1px);
+}
+.btn:active{ transform: translateY(0); }
+
+.btn-primary{
+  background: linear-gradient(135deg, rgba(91,140,255,0.95), rgba(63,209,201,0.85));
+  border-color: rgba(255,255,255,0.18);
+}
+.btn-primary:hover{ filter: brightness(1.05); }
+
+.btn-ghost{
+  background: transparent;
+}
+
+.badge{
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* =========================
+   Forms (Login/Register/Upload)
+========================= */
+.form-wrap{
+  width: min(42px, 92vw);
+  margin: 60px auto;
+}
+
+.form-title{
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.form{
+  display: grid;
+  gap: 12px;
+}
+
+label{
+  font-size: 13px;
+  color: var(--muted);
+}
+
+input, select{
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(10,18,34,0.55);
+  color: var(--text);
+  outline: none;
+}
+
+input:focus, select:focus{
+  border-color: rgba(91,140,255,0.65);
+  box-shadow: 0 0 0 3px rgba(91,140,255,0.18);
+}
+
+.form-actions{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.helper{
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* =========================
+   Alerts
+========================= */
+.alert{
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+}
+.alert-danger{
+  border-color: rgba(255,91,91,0.35);
+  background: rgba(255,91,91,0.10);
+}
+.alert-ok{
+  border-color: rgba(85,211,138,0.35);
+  background: rgba(85,211,138,0.10);
+}
+
+/* =========================
+   Results Page Layout (Left/Right Panels)
+========================= */
+.panels{
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 900px){
+  .panels{ grid-template-columns: 1fr; }
+}
+
+/* Put Summary+Plaque in LEFT, Overlay in RIGHT */
+.right-panel{ order: 2; }
+.left-panel{ order: 1; }
+
+
+/* Swap positions easily:
+   Add class "swap" to .panels if needed */
+.panels.swap .left-panel{ order: 2; }
+.panels.swap .right-panel{ order: 1; }
+
+.kv{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 14px;
+  margin-top: 8px;
+}
+.kv > div:nth-child(odd){
+  color: var(--muted);
+}
+
+.preview{
+  width: 100%;
+  
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.15);
+}
+
+/* =========================
+   Tables (Dashboard / Results list)
+========================= */
+.table-wrap{
+  overflow: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+}
+
+table{
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 740px;
+}
+th, td{
+  text-align: left;
+  padding: 12px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  color: var(--text);
+}
+th{
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(255,255,255,0.05);
+}
+tr:hover td{
+  background: rgba(255,255,255,0.04);
+}
+
+/* =========================
+   Small Utilities
+========================= */
+.row{ display: flex; gap: 10px; flex-wrap: wrap; }
+.spacer{ height: 10px; }
+.center{ text-align: center; }
+.muted{ color: var(--muted); }
+
+/* Grade pills */
+.pill{
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-weight: 800;
+  font-size: 12px;
+}
+.pill.mild{ border-color: rgba(85,211,138,0.45); background: rgba(85,211,138,0.12); }
+.pill.moderate{ border-color: rgba(255,204,102,0.55); background: rgba(255,204,102,0.12); }
+.pill.high{ border-color: rgba(255,91,91,0.55); background: rgba(255,91,91,0.12); }

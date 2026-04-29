@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    .wrap{ max-width:1100px;margin:24px auto;padding:0 14px; }
+    .card{
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius:18px;
+      padding:16px;
+      margin-bottom:16px;
+    }
+    table{ width:100%; border-collapse: collapse; }
+    th,td{ padding:10px; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; }
+    th{ opacity:0.8; font-weight:600; }
+    .btn{
+      padding:8px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color:#fff;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-block;
+    }
+    .btn:hover{ background: rgba(255,255,255,0.10); }
+    .btn-danger{
+      background: rgba(255,0,0,0.12);
+      border-color: rgba(255,0,0,0.25);
+    }
+    .topbar{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+    .muted{ opacity:0.75; }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <div class="card topbar">
+      <div>
+        <h1 style="margin:0;">Dashboard</h1>
+        <div class="muted">User: <b>{{ user }}</b> | Role: <b>{{ role }}</b></div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a class="btn" href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Upload & Run</h2>
+
+      <!-- This form should match your upload.js (ct_file, gt_file) -->
+      <form id="uploadForm" enctype="multipart/form-data">
+        <div style="margin-bottom:10px;">
+          <label>CT Volume (Required) — .nii / .nii.gz</label><br>
+          <input type="file" name="ct_file" required>
+        </div>
+
+
+
+        <button class="btn" type="submit">Upload & Run</button>
+        <span id="status" class="muted" style="margin-left:10px;"></span>
+      </form>
+
+      <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Previous Results</h2>
+
+      {% if results and results|length > 0 %}
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Run ID</th>
+            <th>User</th>
+
+            
+            <th>Open</th>
+            {% if role == "admin" %}
+            <th>Delete</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in results %}
+          <tr>
+            <td>{{ r["id"] }}</td>
+            <td>{{ r["run_id"] }}</td>
+            <td>{{ r["username"] }}</td>
+
+            
+            <td>
+              <a class="btn" href="{{ url_for('results', run_id=r['run_id']) }}">View</a>
+            </td>
+
+            {% if role == "admin" %}
+            <td>
+              <form method="POST"
+                    action="{{ url_for('delete_result', result_id=r['id']) }}"
+                    onsubmit="return confirm('Delete this result?');">
+                <button class="btn btn-danger" type="submit">Delete</button>
+              </form>
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        <p class="muted">No results yet. Upload a CT volume to generate a result.</p>
+      {% endif %}
+    </div>
+
+  </div>
+</body>
+</html>

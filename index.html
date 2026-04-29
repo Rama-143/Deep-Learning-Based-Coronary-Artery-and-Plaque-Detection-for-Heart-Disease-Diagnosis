@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Coronary Artery Segmentation</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script defer src="{{ url_for('static', filename='js/upload.js') }}"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="top">
+      <div>
+        <h1>Coronary Segmentation + Plaque</h1>
+        <p>Upload <b>.nii</b> / <b>.nii.gz</b></p>
+      </div>
+      <span class="badge">Fast Upload • Flask</span>
+    </div>
+
+    <div class="card">
+      <form id="uploadForm">
+        <label class="label">CT Volume (Required) — .nii / .nii.gz</label>
+        <input class="input" type="file" name="ct_file" required>
+
+
+
+        <div class="row">
+          <button class="btn btn-primary" type="submit">Upload & Run</button>
+          <button class="btn btn-ghost" type="reset">Reset</button>
+        </div>
+
+        <div class="progressWrap">
+          <div class="progressBar" id="progressBar"></div>
+        </div>
+        <div class="progressText" id="progressText">Waiting…</div>
+
+
+      </form>
+    </div>
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Results</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <style>
+    .results-container{
+      max-width:1200px;
+      margin:30px auto;
+      padding:0 15px;
+    }
+
+    .results-layout{
+      display:grid;
+      grid-template-columns: 1fr 1fr; /* LEFT | RIGHT */
+      gap:20px;
+      align-items:start;
+    }
+
+    @media (max-width:900px){
+      .results-layout{
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card{
+      background: rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:18px;
+      padding:18px;
+      backdrop-filter: blur(8px);
+    }
+
+    .card h2, .card h3{
+      margin-top:0;
+    }
+
+    .kv{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px 15px;
+      margin-top:10px;
+    }
+
+    .overlay-img{
+      width:100%;
+      border-radius:15px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+
+    .btn{
+      padding:10px 14px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.08);
+      color:white;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-block;
+      margin-top:12px;
+    }
+
+    .btn:hover{
+      background: rgba(255,255,255,0.15);
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:20px;
+      gap: 10px;
+    }
+
+    /* --- Ranges Layout: Plaque ranges (left) + Severe ranges (right) --- */
+    .ranges-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    @media (max-width:600px){
+      .ranges-grid{
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .range-list{
+      list-style:none;
+      padding:0;
+      margin:0;
+    }
+
+    .range-list li{
+      font-weight:600;
+      margin:6px 0;
+    }
+
+    .mild{ color:#22c55e; }      /* green */
+    .moderate{ color:#f59e0b; }  /* orange */
+    .high{ color:#ef4444; }      /* red */
+
+    /* Grade badge */
+    .badge{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:999px;
+      font-weight:700;
+      font-size: 0.9rem;
+      border:1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.06);
+    }
+    .badge.mild{ background: rgba(34,197,94,0.15); }
+    .badge.moderate{ background: rgba(245,158,11,0.15); }
+    .badge.high{ background: rgba(239,68,68,0.15); }
+
+  </style>
+</head>
+
+<body>
+
+<div class="results-container">
+
+  <!-- Top Navigation -->
+  <div class="topbar">
+    <h1>Results</h1>
+    <div>
+      <a href="{{ url_for('dashboard') }}" class="btn">Dashboard</a>
+      <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+    </div>
+  </div>
+
+  <div class="results-layout">
+
+    <!-- LEFT SIDE: Summary + Plaque + Ranges -->
+    <div>
+
+      <!-- Summary -->
+      <div class="card">
+        <h2>Summary</h2>
+        <div>Generated At</div>
+        <div>{{ generated_at}}</div>
+        <div class="kv">
+          <div>CT Shape</div>
+          <div>{{ result.get("ct_shape","") }}</div>
+
+          <div>Artery Coverage</div>
+          <div>{{ "%.3f"|format(result.get("artery_coverage_percent",0)) }}%</div>
+        </div>
+      </div>
+
+      <!-- Plaque -->
+      <div class="card" style="margin-top:20px;">
+        <h2>Plaque</h2>
+
+        {% set plaque_val = result.get("plaque_percent", 0) %}
+        {% set severe_val = result.get("severe_plaque_percent", 0) %}
+
+        {# Derive grades if you want frontend-only grading #}
+        {% if plaque_val <= 30 %}
+          {% set plaque_grade = "Mild" %}
+          {% set plaque_grade_cls = "mild" %}
+        {% elif plaque_val <= 70 %}
+          {% set plaque_grade = "Moderate" %}
+          {% set plaque_grade_cls = "moderate" %}
+        {% else %}
+          {% set plaque_grade = "High" %}
+          {% set plaque_grade_cls = "high" %}
+        {% endif %}
+
+        {% if severe_val <= 30 %}
+          {% set severe_grade = "Mild" %}
+          {% set severe_grade_cls = "mild" %}
+        {% elif severe_val <= 80 %}
+          {% set severe_grade = "Moderate" %}
+          {% set severe_grade_cls = "moderate" %}
+        {% else %}
+          {% set severe_grade = "High" %}
+          {% set severe_grade_cls = "high" %}
+        {% endif %}
+
+        <div class="kv">
+          <div>Method</div>
+          <div>{{ result.get("plaque_method","") }}</div>
+
+          <div>Plaque %</div>
+          <div>{{ "%.4f"|format(plaque_val) }}%</div>
+
+          <div>Grade</div>
+          <div>
+            <span class="badge {{ plaque_grade_cls }}">{{ plaque_grade }}</span>
+          </div>
+
+          <div>Severe Plaque %</div>
+          <div>{{ "%.4f"|format(severe_val) }}%</div>
+
+          <div>Severe Grade</div>
+          <div>
+            <span class="badge {{ severe_grade_cls }}">{{ severe_grade }}</span>
+          </div>
+        </div>
+
+        <!-- Plaque + Severe Plaque ranges (Side by side) -->
+        <div class="ranges-grid">
+          <div class="card" style="margin:0;">
+            <h3>Plaque Ranges</h3>
+            <ul class="range-list">
+              <li class="mild">0 - 30% → Mild</li>
+              <li class="moderate">31 - 70% → Moderate</li>
+              <li class="high">71 - 100% → High</li>
+            </ul>
+          </div>
+
+          <div class="card" style="margin:0;">
+            <h3>Severe Plaque Ranges</h3>
+            <ul class="range-list">
+              <li class="mild">0 - 30% → Mild</li>
+              <li class="moderate">31 - 80% → Moderate</li>
+              <li class="high">81 - 100% → High</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Save Result -->
+        <form method="POST" action="{{ url_for('save_result') }}">
+          <input type="hidden" name="run_id" value="{{ run_id }}">
+          <input type="hidden" name="ct_shape" value="{{ result.get('ct_shape','') }}">
+          <input type="hidden" name="artery_coverage" value="{{ result.get('artery_coverage_percent',0) }}">
+          <input type="hidden" name="plaque_percent" value="{{ plaque_val }}">
+          <input type="hidden" name="severe_plaque_percent" value="{{ severe_val }}">
+
+          <button type="submit" class="btn">Save Result</button>
+        </form>
+
+      </div>
+
+    </div>
+
+    <!-- RIGHT SIDE: Overlay Image only -->
+    <div class="card">
+      <h2>Overlay Preview</h2>
+
+      <img
+        src="{{ url_for('serve_run_file', run_id=run_id, filename='overlay.png') }}"
+        class="overlay-img"
+        alt="Overlay Image"
+      >
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>
